@@ -13,6 +13,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatPhoneNumber } from "@/lib/utils";
 
 interface AddDoctorDialogProps {
@@ -28,13 +29,44 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
     speciality: "",
     gender: "MALE" as Gender,
     isActive: true,
+    imageUrl: "",
   });
+  const [avatarError, setAvatarError] = useState<string | null>(null);
 
   const createDoctorMutation = useCreateDoctor();
 
   const handlePhoneChange = (value: string) => {
     const formattedPhoneNumber = formatPhoneNumber(value);
     setNewDoctor({ ...newDoctor, phone: formattedPhoneNumber });
+  };
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      setNewDoctor((prev) => ({ ...prev, imageUrl: "" }));
+      setAvatarError(null);
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Please upload an image file.");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError("Image must be 2MB or smaller.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setNewDoctor((prev) => ({ ...prev, imageUrl: reader.result as string }));
+        setAvatarError(null);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = () => {
@@ -50,7 +82,9 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
       speciality: "",
       gender: "MALE",
       isActive: true,
+      imageUrl: "",
     });
+    setAvatarError(null);
   };
 
   return (
@@ -62,6 +96,39 @@ function AddDoctorDialog({ isOpen, onClose }: AddDoctorDialogProps) {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="new-avatar">Avatar</Label>
+            <div className="flex items-center gap-4">
+              <Avatar className="size-14 border border-border/50">
+                {newDoctor.imageUrl ? (
+                  <AvatarImage src={newDoctor.imageUrl} alt={newDoctor.name || "Doctor"} />
+                ) : null}
+                <AvatarFallback>
+                  {(newDoctor.name || "Dr")
+                    .split(" ")
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0]?.toUpperCase())
+                    .join("") || "DR"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 space-y-1">
+                <Input id="new-avatar" type="file" accept="image/*" onChange={handleAvatarChange} />
+                <p className="text-xs text-muted-foreground">PNG or JPG, up to 2MB.</p>
+                {avatarError ? <p className="text-xs text-destructive">{avatarError}</p> : null}
+                {newDoctor.imageUrl ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setNewDoctor((prev) => ({ ...prev, imageUrl: "" }))}
+                  >
+                    Remove avatar
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="new-name">Name *</Label>
