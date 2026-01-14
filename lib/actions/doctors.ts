@@ -31,6 +31,7 @@ interface CreateDoctorInput {
   speciality: string;
   gender: Gender;
   isActive: boolean;
+  imageUrl?: string;
 }
 
 export async function createDoctor(input: CreateDoctorInput) {
@@ -40,7 +41,7 @@ export async function createDoctor(input: CreateDoctorInput) {
     const doctor = await prisma.doctor.create({
       data: {
         ...input,
-        imageUrl: generateAvatar(input.name, input.gender),
+        imageUrl: input.imageUrl || generateAvatar(input.name, input.gender),
       },
     });
 

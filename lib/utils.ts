@@ -6,11 +6,21 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function generateAvatar(name: string, gender: "MALE" | "FEMALE") {
-  const username = name.replace(/\s+/g, "").toLowerCase();
-  const base = "https://avatar.iran.liara.run/public";
-  if (gender === "FEMALE") return `${base}/girl?username=${username}`;
-  // default to boy
-  return `${base}/boy?username=${username}`;
+  const initials =
+    name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "DR";
+  const background = gender === "FEMALE" ? "#FDE2E4" : "#DBEAFE";
+  const textColor = "#111827";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" role="img" aria-label="${initials}">
+  <rect width="100%" height="100%" fill="${background}" />
+  <text x="50%" y="50%" dy="0.35em" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" fill="${textColor}">${initials}</text>
+</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
 // phone formatting function for US numbers - ai generated 🎉
