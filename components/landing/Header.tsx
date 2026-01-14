@@ -9,7 +9,7 @@ function Header() {
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
           <Image src={"/logo.png"} alt="SmileEcho Logo" width={32} height={32} className="w-11" />
-          <span className="font-semibold text-lg">SmileEcho</span>
+          <span className="font-semibold text-4xl">SmileEcho</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
