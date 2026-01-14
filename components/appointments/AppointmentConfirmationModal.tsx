@@ -46,7 +46,7 @@ export function AppointmentConfirmationModal({
         <div className="space-y-6">
           {/* Email Notification Section */}
           <div className="flex flex-col items-center space-y-3">
-            <div className="relative">
+            {/* <div className="relative">
               <Image
                 src="/email-sent.png"
                 alt="Email sent"
@@ -54,7 +54,7 @@ export function AppointmentConfirmationModal({
                 height={120}
                 className="mx-auto"
               />
-            </div>
+            </div> */}
 
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
